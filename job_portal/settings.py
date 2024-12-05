@@ -85,6 +85,7 @@ import dj_database_url
 DATABASES = {
     'default': dj_database_url.config(
         default='postgresql://postgres:1234@localhost:5433/job_portal',
+        ssl_require=True,  # Ensure SSL is used for secure connection
         conn_max_age=600
     )
 }
