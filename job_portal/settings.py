@@ -80,18 +80,15 @@ WSGI_APPLICATION = 'job_portal.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+import dj_database_url
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'job_portal',
-        'USER': 'postgres',
-        'PASSWORD': '1234',
-        'HOST': 'localhost',  # Set to the appropriate PostgreSQL server addressmy_env_name\Scripts\activate
-        'PORT': '5433',      # Set to the appropriate PostgreSQL server port
-
-    }
+    'default': dj_database_url.config(
+        default='postgresql://postgres:1234@localhost:5433/job_portal',
+        conn_max_age=600
+    )
 }
+
 
 
 # Password validation
