@@ -80,13 +80,26 @@ WSGI_APPLICATION = 'job_portal.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+
+#import dj_database_url
+#DATABASES = {
+#    'default': dj_database_url.config(
+#        default='postgresql://postgres:1234@localhost:5433/job_portal',
+#        conn_max_age=600,
+#        ssl_require=True,  # Ensure SSL is used for secure connection
+#
+#    )
+#}
+
+
+import os
 import dj_database_url
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://postgres:1234@localhost:5433/job_portal',
-        ssl_require=True,  # Ensure SSL is used for secure connection
-        conn_max_age=600
+        default='postgresql://job_portal_fxk1_user:0TJWSoNstTXPpe0AFL1a5hSRfLwe6jEa@dpg-ct7j1bq3esus73bt44j0-a/job_portal_fxk1',
+        conn_max_age=600,
+        ssl_require=True
     )
 }
 
