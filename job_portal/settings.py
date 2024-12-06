@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-mmj#r@#adk2amw!(9@91%3p8!f=5bp7j0)yl*n36urr79d4tp*
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    
+    'localhost',
+    '127.0.0.1',
     'online-recruitment-portal.onrender.com',  # Add your Render domain here
 ]
 
@@ -79,7 +80,6 @@ WSGI_APPLICATION = 'job_portal.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 #import dj_database_url
 #DATABASES = {
 #    'default': dj_database_url.config(
@@ -89,20 +89,17 @@ WSGI_APPLICATION = 'job_portal.wsgi.application'
 #
 #    )
 #}
+#
 
-
-import os
 import dj_database_url
-
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://job_portal_fxk1_user:0TJWSoNstTXPpe0AFL1a5hSRfLwe6jEa@dpg-ct7j1bq3esus73bt44j0-a/job_portal_fxk1',
+        default='postgresql://job_portal_fxk1_user:0TJWSoNstTXPpe0AFL1a5hSRfLwe6jEa@dpg-ct7j1bq3esus73bt44j0-a.oregon-postgres.render.com/job_portal_fxk1',
         conn_max_age=600,
-        ssl_require=True
+        ssl_require=True,  # Ensure SSL is used for secure connection
+
     )
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
