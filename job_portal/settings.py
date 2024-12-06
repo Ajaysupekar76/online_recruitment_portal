@@ -26,8 +26,7 @@ SECRET_KEY = 'django-insecure-mmj#r@#adk2amw!(9@91%3p8!f=5bp7j0)yl*n36urr79d4tp*
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
+    
     'online-recruitment-portal.onrender.com',  # Add your Render domain here
 ]
 
