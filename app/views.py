@@ -74,7 +74,7 @@ def RegisterUser(request):
   '''
 
 
-
+'''
 def RegisterUser(request):
     if request.POST['role'] == "Candidate":
         role = request.POST['role']
@@ -128,6 +128,71 @@ def RegisterUser(request):
                 send_mail(subject, message, from_email, recipient_list)
 
                 return render(request,"otpverify.html", {'email': company_email})
+'''
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.core.mail import send_mail
+from random import randint
+from .models import UserMaster, Candidate, Company
+
+def RegisterUser(request):
+    if request.method == 'POST':
+        role = request.POST.get('role')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        cpassword = request.POST.get('cpassword')
+
+        if not email or not password or not cpassword:
+            messages.error(request, 'All fields are required.')
+            return redirect('/signuppage/')
+
+        if password != cpassword:
+            messages.error(request, 'Passwords do not match.')
+            return redirect('/signuppage/')
+
+        # Check if user already exists
+        if UserMaster.objects.filter(email=email).exists():
+            messages.error(request, 'User already exists.')
+            return redirect('/signuppage/')
+
+        otp = randint(100000, 999999)
+
+        # Create user
+        new_user = UserMaster.objects.create(
+            role=role, email=email, password=password, otp=otp
+        )
+
+        if role == 'Candidate':
+            firstname = request.POST.get('firstname')
+            lastname = request.POST.get('lastname')
+            Candidate.objects.create(
+                user_id=new_user, firstname=firstname, lastname=lastname
+            )
+        elif role == 'Company':
+            firstname = request.POST.get('firstname')
+            lastname = request.POST.get('lastname')
+            company_name = request.POST.get('company_name')
+            Company.objects.create(
+                user_id=new_user, firstname=firstname, lastname=lastname, company_name=company_name
+            )
+
+        # Send OTP email
+        try:
+            send_mail(
+                subject='OTP Verification',
+                message=str(otp),
+                from_email='your_email@gmail.com',
+                recipient_list=[email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            messages.error(request, f'Error sending OTP: {e}')
+            return redirect('/signuppage/')
+
+        return render(request, "otpverify.html", {'email': email})
+
+    return redirect('/signuppage/')
 
 
 
