@@ -93,7 +93,6 @@ def RegisterUser(request):
                 otp = randint(100000, 999999)
                 newuser = UserMaster.objects.create(role=role, otp=otp, email=email, password=password)
                 newcand = Candidate.objects.create(user_id=newuser, firstname=firstname, lastname=lastname)
-
                 # Send OTP via Email
                 subject = 'OTP Verification'
                 message =str(otp)
@@ -126,7 +125,6 @@ def RegisterUser(request):
                 from_email ='ajaysupekar76@gmail.com'  # Update with your email
                 recipient_list = [company_email]
                 send_mail(subject, message, from_email, recipient_list)
-
                 return render(request,"otpverify.html", {'email': company_email})
 
 
@@ -327,7 +325,7 @@ def LoginUser(request00):
 
 '''
 
-
+'''
 def LoginUser(request):
     role = request.POST.get('role')
     Email = request.POST.get('email')
@@ -343,7 +341,6 @@ def LoginUser(request):
                 return redirect(f'/loginpage/')
         else:
             user = UserMaster.objects.get(email=Email, role=role)
-           
             if user.password == password:
                 if role == "Candidate":
                     candidate = Candidate.objects.get(user_id=user)
@@ -371,6 +368,65 @@ def LoginUser(request):
     except UserMaster.DoesNotExist:
         messages.error(request, 'User does not exist !')
         return redirect(f'/loginpage/')
+'''
+
+
+from django.shortcuts import redirect
+from django.contrib import messages
+from .models import UserMaster, Candidate, Company
+
+def LoginUser(request):
+    role = request.POST.get('role')
+    Email = request.POST.get('email')
+    password = request.POST.get('password')
+    
+    if not role or not Email or not password:
+        messages.error(request, 'All fields are required!')
+        return redirect('/loginpage/')
+    
+    try:
+        if role == "Admin":
+            if Email == "admin@gmail.com" and password == "admin@12345":
+                request.session.flush()  # Clear any previous session data
+                request.session['email'] = Email
+                request.session['role'] = "Admin"
+                return redirect('/adminindexpage/')
+            else:
+                messages.error(request, 'Invalid admin email or password!')
+                return redirect('/loginpage/')
+        
+        # Non-admin roles
+        user = UserMaster.objects.filter(email__iexact=Email, role=role).first()
+        if user is None:
+            messages.error(request, 'Email or role is incorrect!')
+            return redirect('/loginpage/')
+
+        if user.password != password:
+            messages.error(request, 'Password is incorrect!')
+            return redirect('/loginpage/')
+
+        # Successful login
+        request.session.flush()
+        request.session['id'] = user.id
+        request.session['role'] = user.role
+        request.session['email'] = user.email
+
+        if role == "Candidate":
+            candidate = Candidate.objects.get(user_id=user)
+            request.session['firstname'] = candidate.firstname
+            request.session['lastname'] = candidate.lastname
+            return redirect('indexpage')
+        
+        elif role == "Company":
+            company = Company.objects.get(user_id=user)
+            request.session['firstname'] = company.firstname
+            request.session['lastname'] = company.lastname
+            request.session['company_name'] = company.company_name
+            return redirect('companyindex')
+        
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}")
+        return redirect('/loginpage/')
 
 
 
